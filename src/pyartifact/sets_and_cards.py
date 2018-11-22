@@ -54,7 +54,7 @@ class CardBase:
         """List of cards that this card references"""
         references = []
         for ref in self._references:
-            if ref['ref_type'] == 'references':
+            if ref['ref_type'] == 'references' or ref['ref_type'] == 'active_ability':
                 reference = ctx.cards_by_id[ref['card_id']]
                 references.append(reference)
         return references
