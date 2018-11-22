@@ -1,6 +1,8 @@
+import json
 from typing import Optional, List, Union, Type, Dict
 
 import requests
+import os
 
 from ._context import ctx
 from .types.json_types import CardSetType, SetInfoType, SetDataType, ReferenceType
@@ -296,10 +298,16 @@ class CardSet:
         self.url = f'{self.base_url}{set_number}'
         self.expire_time = None
         self.data: Optional[CardSetData] = None
+        self.set_number = set_number
 
     def load(self) -> None:
         """Loads the cards set data"""
-        cdn_info = requests.get(self.url).json()
-        self.expire_time = cdn_info['expire_time']
-        data: SetDataType = requests.get(f"{cdn_info['cdn_root']}{cdn_info['url']}").json()
+        cache_path = os.path.join(os.path.dirname(__file__),'json_cache',f'card_set_{self.set_number}.json')
+        if os.path.exists(cache_path):
+            with open(cache_path,encoding='utf-8') as f:
+                data = json.load(f)
+        else:
+            cdn_info = requests.get(self.url).json()
+            self.expire_time = cdn_info['expire_time']
+            data: SetDataType = requests.get(f"{cdn_info['cdn_root']}{cdn_info['url']}").json()
         self.data = CardSetData(data['card_set'])
