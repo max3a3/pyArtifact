@@ -24,7 +24,7 @@ class Cards:
         if localize is not None:
             ctx.language = localize.lower()
 
-    def load_all_sets(self) -> None:
+    def load_all_sets(self) -> 'Cards':
         """
         Loads all the sets it should load from the api.
         """
