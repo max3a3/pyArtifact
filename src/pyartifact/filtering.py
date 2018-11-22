@@ -237,3 +237,6 @@ class CardFilter:
             if getattr(card, 'sub_type') == sub_type:
                 self._filtered.append(card)
         return CardFilter(cards=self._filtered)
+
+    def named(self,name:str)->'list':
+        return list(filter(lambda c:c.name==name,self.cards))
