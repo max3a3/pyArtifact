@@ -107,3 +107,6 @@ venv.bak/
 
 # Poetry
 poetry.lock
+
+
+.idea/
