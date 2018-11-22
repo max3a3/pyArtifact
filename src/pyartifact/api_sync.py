@@ -33,6 +33,7 @@ class Cards:
         for set_ in self.sets:
             set_.load()
         ctx.loaded_sets = self._set_numbers
+        return self
 
     @property
     def filter(self) -> 'CardFilter':
@@ -66,6 +67,9 @@ class Cards:
             # If it's all abilities for some reason, just return the first one
             return cards_found[0]
         return cards_found
+
+    def get_by_id(self, id: int) -> 'CardTypesInstanced':
+        return ctx.cards_by_id[id]
 
     def find(self, name_approx: str) -> 'CardTypesInstanced':
         raise NotImplementedError('Card lookup with approx. names is not yet implemented.')
