@@ -44,7 +44,7 @@ class CardBase:
         self.large_image: Optional[str] = kwargs['large_image'].get(ctx.language, kwargs['large_image'].get('default'))
         self.ingame_image: Optional[str] = kwargs['ingame_image'].get('default')
         self._references: List[ReferenceType] = kwargs['references']
-
+        self.parent:Optional[Hero] = None
     def __str__(self) -> str:
         return self.name
 
@@ -279,6 +279,8 @@ class CardSetData:
         self.version: int = data['version']
         self.set_info = SetInfo(data['set_info'])
         self.card_list: List[CardTypesInstanced] = []
+
+        heroes = []
         for card in data['card_list']:
             if card['card_type'] not in self.not_indexed:
                 type_of_card = STR_TO_CARD_TYPE[card['card_type']]  # type: CardTypes
@@ -288,6 +290,13 @@ class CardSetData:
                 ctx.cards_by_id[card['base_card_id']] = card_instance
                 card_name = card['card_name'][ctx.language].lower()
                 ctx.cards_by_name[card_name].append(card_instance)
+
+                if card['card_type']=='Hero':
+                    heroes.append(card_instance)
+
+        for hero in heroes:
+            for inc in hero.includes:
+                inc.parent = hero
 
 
 class CardSet:
