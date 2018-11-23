@@ -1,7 +1,10 @@
 import json
+import re
+from collections import namedtuple
 from typing import Optional, List, Union, Type, Dict
 
 import requests
+import html2text
 import os
 
 from ._context import ctx
@@ -38,6 +41,7 @@ class CardBase:
         self.name: str = kwargs['card_name'][ctx.language]
         self.type: str = kwargs['card_type']
         self.text: str = kwargs['card_text'].get(ctx.language, '')
+        self.plain_text: str = html2text.html2text(self.text).replace('\n','')
         # TODO images maybe should to be moved to NotAbility?
         self.mini_image: Optional[str] = kwargs['mini_image'].get('default')
         # Large images can be localized, but a fallback is wise, not only because english is 'default' for some reason
@@ -105,6 +109,9 @@ class Unit:
         self.armor: int = kwargs.get('armor', 0)
         self.hit_points: int = kwargs.get('hit_points', 0)
 
+    @property
+    def health(self)-> int:
+        return self.hit_points
 
 class NotAbility:
     """
@@ -123,10 +130,30 @@ class NotAbility:
     | illustrator  | str            | Name of the illustrator that drew the card art                        |
     +--------------+----------------+-----------------------------------------------------------------------+
     """
+
+    active_re = re.compile('Active (\d):<\/span>')
+    AbilityData = namedtuple('AbilityData', ['type','cooldown','card_id'])
+
     def __init__(self, **kwargs) -> None:
         self.rarity: Optional[str] = kwargs.get('rarity')
         self.item_def: Optional[int] = kwargs.get('item_def')
         self.illustrator: str = kwargs['illustrator']
+
+    @property
+    def abilities_data(self) -> List[namedtuple]:
+        ret = list()
+        for ref in self._references:
+            if 'ability' in ref['ref_type']:
+                cooldown = 0
+                if 'active' in ref['ref_type']:
+                    cooldown = int(self.active_re.search(self.text).group(1))
+                data = NotAbility.AbilityData(type=ref['ref_type'].replace('_ability', ''),
+                                              cooldown=cooldown,
+                                              card_id=ref['card_id']
+                                              )
+                ret.append(data)
+
+        return ret
 
     @property
     def active_abilities(self) -> List['Ability']:
@@ -151,6 +178,9 @@ class Castable:
     """
     def __init__(self, **kwargs) -> None:
         self.mana_cost: int = kwargs['mana_cost']
+    @property
+    def mana(self)-> int:
+        return self.mana_cost
 
 
 class Hero(CardBase, ColoredCard, Unit, NotAbility):
