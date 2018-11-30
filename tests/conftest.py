@@ -28,7 +28,7 @@ deck_codes = [
     )
 ]
 
-
+#allow rerunning test with different value for the deck_code param
 @pytest.fixture(params=deck_codes)
 def deck_code(request):
     yield request.param

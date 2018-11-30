@@ -311,6 +311,7 @@ class CardSetData:
         self.card_list: List[CardTypesInstanced] = []
 
         heroes = []
+        with_abilities = []
         for card in data['card_list']:
             if card['card_type'] not in self.not_indexed:
                 type_of_card = STR_TO_CARD_TYPE[card['card_type']]  # type: CardTypes
@@ -323,11 +324,17 @@ class CardSetData:
 
                 if card['card_type']=='Hero':
                     heroes.append(card_instance)
+                if getattr(card_instance,'abilities_data',None):
+                    with_abilities.append(card_instance)
 
         for hero in heroes:
             for inc in hero.includes:
                 inc.parent = hero
 
+        for unit in with_abilities:
+            for reference in unit.abilities_data:
+                ref_id = reference.card_id
+                ctx.cards_by_id[ref_id].parent = unit
 
 class CardSet:
     """Card set."""

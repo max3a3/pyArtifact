@@ -26,6 +26,13 @@ def test_abilities_data(cards):
     assert c.abilities_data[0].type == 'passive'
     assert c.abilities_data[0].card_id == 10491
 
+    ability = cards.get_by_id(10491)
+    assert ability.parent == c
+
+def test_creep_abilities_data(cards):
+    creep = cards.filter.type('Creep').named("Satyr Magician")[0]
+    ability = cards.get_by_id(creep.abilities_data[0].card_id)
+    assert ability.parent == creep
 
 if __name__ == "__main__":
     pass

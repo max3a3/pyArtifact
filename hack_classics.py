@@ -39,10 +39,10 @@ def list_spell_conditions():
     spell = cards.get("Allseeing One's Favor")
     print(f'{spell.id} {spell.text}')
 
-def list_cooldown():
+def active_ability():
     cards = Cards(limit_sets=["01"]).load_all_sets()
-    imp = cards.get_by_id(10175) #"Aghanim's Sanctum"
-    print(imp.active_abilities)  #this is retrieved as a property get from card._references
+    hero = cards.filter.type('Improvement').named("Aghanim's Sanctum")[0]
+    print(hero.type, hero.active_abilities)  #this is retrieved as a property get from card._references
 
     text = "<span style='font-weight:bold;color:#ffffff;'>Active 1:</span> Fully restore your tower's Mana."
     cool_down = 1
@@ -51,23 +51,46 @@ def list_cooldown():
     print(ability.text)
 
 
-    print(imp.abilities_data)
+    print(hero.abilities_data)
+
+    for ab in hero.abilities_data:
+        if ab.type=='active':
+            ab_card = cards.get_by_id(ab.card_id)
+            print(ab_card,ab_card.text)
+
 
 def passive_ability():
     cards = Cards(limit_sets=["01"]).load_all_sets()
-    imp = cards.get('Venomancer')
-    abilities = imp.abilities_data
-    print(imp,abilities)
+    hero = cards.get('Venomancer')
+    abilities = hero.abilities_data
+    print(hero,abilities)
+    print(hero.abilities_data)
 
-    imp = cards.get('Treant Protector')
-    abilities = imp.abilities_data
-    print(imp,abilities)
+    hero = cards.get('Treant Protector')
+    abilities = hero.abilities_data
+    print(hero.id, hero,abilities)
+    print(hero.text)
+    print(hero.abilities_data)
+
+    ability_card = cards.get_by_id(hero.abilities_data[0].card_id)
+    print("treant ability_card.parent",ability_card.parent)
+
+def creep_ability():
+    cards = Cards(limit_sets=["01"]).load_all_sets()
+    creep = cards.filter.type('Creep').named("Satyr Magician")[0]
+    abilities = creep.abilities_data
+    print(creep.id,creep,abilities)
+    print(creep.abilities_data)
+
+    ability_card = cards.get_by_id(creep.abilities_data[0].card_id)
+    print("ability_card.parent",ability_card.parent)
 
 if __name__ == "__main__":
-    list_classic()
+    # list_classic()
     # list_spell_conditions()
-    # list_cooldown()
+    # active_ability()
     # passive_ability()
+    creep_ability()
     # test_get_multiple()
 '''
 Melee Creep id(1006) atk(2) arm(0) health(4)
