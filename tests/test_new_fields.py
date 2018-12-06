@@ -12,6 +12,9 @@ def test_card_health(cards):
 def test_plain_text(cards):
     assert cards.get("Fighting Instinct").plain_text == "Modify a red hero with +1 Attack and +1 Armor."
 
+def test_plain_text_2(cards):
+    assert cards.get("Loyal Beast").plain_text == "When Loyal Beast deals battle damage to a unit, modify that unit with -1 Attack."
+
 
 def test_abilities_data(cards):
     c = cards.get("Aghanim's Sanctum")
