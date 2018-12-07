@@ -41,7 +41,7 @@ class CardBase:
         self.name: str = kwargs['card_name'][ctx.language]
         self.type: str = kwargs['card_type']
         self.text: str = kwargs['card_text'].get(ctx.language, '')
-        self.plain_text: str = html2text.html2text(self.text).replace('\n','')
+        self.plain_text: str = html2text.html2text(self.text,bodywidth=200).replace('\n','')
         # TODO images maybe should to be moved to NotAbility?
         self.mini_image: Optional[str] = kwargs['mini_image'].get('default')
         # Large images can be localized, but a fallback is wise, not only because english is 'default' for some reason
@@ -65,6 +65,24 @@ class CardBase:
                 references.append(reference)
         return references
 
+    active_re = re.compile('Active (\d):<\/span>')
+    AbilityData = namedtuple('AbilityData', ['type','cooldown','card_id'])
+
+    @property
+    def abilities_data(self) -> List[namedtuple]:
+        ret = list()
+        for ref in self._references:
+            if 'ability' in ref['ref_type']:
+                cooldown = 0
+                if 'active' in ref['ref_type']:
+                    cooldown = int(self.active_re.search(self.text).group(1))
+                data = self.AbilityData(type=ref['ref_type'].replace('_ability', ''),
+                                              cooldown=cooldown,
+                                              card_id=ref['card_id']
+                                              )
+                ret.append(data)
+
+        return ret
 
 class ColoredCard:
     """
@@ -131,29 +149,12 @@ class NotAbility:
     +--------------+----------------+-----------------------------------------------------------------------+
     """
 
-    active_re = re.compile('Active (\d):<\/span>')
-    AbilityData = namedtuple('AbilityData', ['type','cooldown','card_id'])
 
     def __init__(self, **kwargs) -> None:
         self.rarity: Optional[str] = kwargs.get('rarity')
         self.item_def: Optional[int] = kwargs.get('item_def')
-        self.illustrator: str = kwargs['illustrator']
+        self.illustrator: str = kwargs.get('illustrator','')
 
-    @property
-    def abilities_data(self) -> List[namedtuple]:
-        ret = list()
-        for ref in self._references:
-            if 'ability' in ref['ref_type']:
-                cooldown = 0
-                if 'active' in ref['ref_type']:
-                    cooldown = int(self.active_re.search(self.text).group(1))
-                data = NotAbility.AbilityData(type=ref['ref_type'].replace('_ability', ''),
-                                              cooldown=cooldown,
-                                              card_id=ref['card_id']
-                                              )
-                ret.append(data)
-
-        return ret
 
     @property
     def active_abilities(self) -> List['Ability']:
@@ -177,7 +178,7 @@ class Castable:
     +--------------+------+---------------------------------+
     """
     def __init__(self, **kwargs) -> None:
-        self.mana_cost: int = kwargs['mana_cost']
+        self.mana_cost: int = kwargs.get('mana_cost',0)
     @property
     def mana(self)-> int:
         return self.mana_cost
@@ -295,6 +296,7 @@ STR_TO_CARD_TYPE: Dict[str, CardTypes] = {
     'Creep': Creep,
     'Ability': Ability,
     'Item': Item,
+    'Stronghold':Creep,
     'Improvement': Improvement
 }
 AVAILABLE_TYPES = (Item, Hero, Ability, PassiveAbility, Improvement, Creep, Spell)
@@ -303,7 +305,7 @@ AVAILABLE_TYPES = (Item, Hero, Ability, PassiveAbility, Improvement, Creep, Spel
 class CardSetData:
     """Cards and Set Data."""
     # Stronghold and Pathing are core game mechanics, there's no need to be indexing them
-    not_indexed = ['Stronghold', 'Pathing']
+    not_indexed = ['Pathing']
 
     def __init__(self, data: CardSetType) -> None:
         self.version: int = data['version']

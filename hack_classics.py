@@ -99,6 +99,9 @@ def list_card(name):
     # if not getattr(card,'mana_cost','no_color'):
 
     print(f"id {card.id} ({getattr(card,'color','no_color')}) [{getattr(card,'mana_cost',0)}] {card.type} {card.name}: {card.plain_text}")
+    if card.type!='Spell' and card.type!='Ability' and card.type!='Improvement':
+        print(f"     h{card.health}, a{card.attack}, m{card.armor}")
+
     if card.parent:
         print(f"  parent {card.parent}")
 
@@ -129,8 +132,10 @@ if __name__ == "__main__":
     # list_card('Cleansing Rite')
     # list_card('Fighting Instinct')
     # list_card('corrosive mist')
-
+    # list_card('Lightning Strike')
     # list_card('heroic resolve')
+    # list_card('heroic resolve')
+
 
     # list_item('Short Sword')
     # list_item('Stonehall Pike')
@@ -141,13 +146,18 @@ if __name__ == "__main__":
     # list_item('broadsword')
     # list_item('red mist maul')
     # list_item('blink dagger')
+    list_card('trebuchets')
+    # list_card('plague ward')
+
+
 
     # list_card('beastmaster')
     # list_card('Call of the Wild')
     # list_card('loyal beast')
 
 
-    list_card('Ancient Tower')
+    # list_card('Ancient Tower')
+    # list_card('Defense Tower')
     #to read card
     # list_card('hip fire')
 
