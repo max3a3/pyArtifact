@@ -37,6 +37,10 @@ def test_creep_abilities_data(cards):
     ability = cards.get_by_id(creep.abilities_data[0].card_id)
     assert ability.parent == creep
 
+def test_trebuchets(cards):
+    card = cards.get('Trebuchets')
+    assert card.is_crosslane
 if __name__ == "__main__":
     pass
-    test_spell_mana(Cards(limit_sets=["01"]).load_all_sets())
+    # test_spell_mana(Cards(limit_sets=["01"]).load_all_sets())
+    test_trebuchets(Cards(limit_sets=["01"]).load_all_sets())

@@ -49,6 +49,7 @@ class CardBase:
         self.ingame_image: Optional[str] = kwargs['ingame_image'].get('default')
         self._references: List[ReferenceType] = kwargs['references']
         self.parent:Optional[Hero] = None
+        self.is_crosslane: bool = kwargs.get('is_crosslane',False)
     def __str__(self) -> str:
         return self.name
 
