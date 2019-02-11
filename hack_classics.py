@@ -1,3 +1,5 @@
+import random
+
 from pyartifact import Cards
 
 
@@ -65,21 +67,17 @@ def active_ability():
             print(ab_card,ab_card.text)
 
 
-def passive_ability():
+def passive_ability(hero_name='Treant Protector'):
     cards = Cards(limit_sets=["01"]).load_all_sets()
-    hero = cards.get('Venomancer')
-    abilities = hero.abilities_data
-    print(hero,abilities)
-    print(hero.abilities_data)
 
-    hero = cards.get('Treant Protector')
+    hero = cards.get(hero_name)
     abilities = hero.abilities_data
     print(hero.id, hero,abilities)
     print(hero.text)
     print(hero.abilities_data)
 
     ability_card = cards.get_by_id(hero.abilities_data[0].card_id)
-    print("treant ability_card.parent",ability_card.parent)
+    print(f"{hero_name} ability_card.parent",ability_card.parent)
 
 def creep_ability():
     cards = Cards(limit_sets=["01"]).load_all_sets()
@@ -113,6 +111,8 @@ def list_card(name):
         for r in card.references:
             print(
                 f"  ref -> id {r.id} ({getattr(r,'color','no_color')}) [{getattr(r,'mana_cost',0)}] {r.type} {r.name}: {r.plain_text}")
+    if card.is_crosslane:
+        print('  <-> cross lane')
     print("\n"*2)
 def list_item(name):
     cards = Cards().load_all_sets()
@@ -120,6 +120,14 @@ def list_item(name):
     print(f"id {card.id} {card.type} [{card.sub_type}] {card.name}: {card.plain_text}")
     for a in card.abilities_data:
         print(f"  active id {a.card_id} cd:{a.cooldown}")
+
+def list_color(color):
+
+    cards = Cards().load_all_sets()
+    card_set = cards.filter.color(color)
+    for x in range(10):
+        card = random.choice(card_set)
+        print(card)
 if __name__ == "__main__":
     # list_classic()
     # list_spell_conditions()
@@ -146,8 +154,19 @@ if __name__ == "__main__":
     # list_item('broadsword')
     # list_item('red mist maul')
     # list_item('blink dagger')
-    list_card('trebuchets')
+    # list_card('trebuchets')
+    # list_card('steel reinforcement')
     # list_card('plague ward')
+
+    # list_card('Collateral Damage')
+    # passive_ability('legion commander')
+
+
+    # list_card('phantom assassin')
+    # list_card('Hellbear Crippler')
+    # list_card('Rebel instigator')
+    # list_card('Iron Branch protection')
+    # list_card('Sucker Punch')
 
 
 
@@ -160,6 +179,12 @@ if __name__ == "__main__":
     # list_card('Defense Tower')
     #to read card
     # list_card('hip fire')
+
+    # list_color('Red')
+
+    list_card('Sucker Punch')
+
+    list_card('Rend Armor')
 
 '''
 Melee Creep id(1006) atk(2) arm(0) health(4)
